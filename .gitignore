@@ -32,5 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
+## SCRIPTING FILES ###
+start-rabbitmq.ps1
+
 ## ENVIRONMENT FILES ###
 .env
