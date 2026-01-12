@@ -59,7 +59,7 @@ docker-compose up --build
 
 A aplicação estará disponível em `http://localhost:8080`
 
-## 📡 Endpoints
+## Endpoints
 
 ### Enviar E-mail
 
@@ -138,25 +138,40 @@ mvn test
 
 ## Estrutura do Projeto
 
-```
-src/main/java/com/smh/emailsender/
-├── application/
-│   ├── port/
-│   │   ├── in/          # Portas de entrada (interfaces de casos de uso)
-│   │   └── out/          # Portas de saída (interfaces de serviços externos)
-│   └── usecase/         # Implementações dos casos de uso
-├── domain/
-│   ├── model/           # Entidades de domínio
-│   └── exception/       # Exceções de domínio
-├── infrastructure/
-│   ├── adapters/
-│   │   ├── in/          # Adaptadores de entrada (controllers, listeners)
-│   │   └── out/         # Adaptadores de saída (repositórios, serviços externos)
-│   ├── configuration/   # Configurações do Spring
-│   └── web/             # Componentes web (interceptors, métricas)
-└── interfaces/
-    └── dtos/            # Data Transfer Objects
-```
+
+### `application/` — camada de orquestração de casos de uso
+Responsabilidade: implementar a lógica de aplicação que orquestra entidades e portas (interfaces). Contém contratos que definem o que a aplicação faz e implementações dos casos de uso.
+- `application/port/in/` — Portas de entrada  
+  Descreve os contratos que adaptadores de entrada (controllers, listeners) chamam.  
+- `application/port/out/` — Portas de saída  
+  Interfaces que representam dependências externas usadas pelos casos de uso (envio de e‑mail, persistência, enfileiramento).  
+- `application/usecase/` — Implementações dos casos de uso  
+  Implementações concretas que realizam a orquestração e regras de aplicação.  
+
+### `domain/` — núcleo do negócio
+Responsabilidade: modelos do domínio, validações e regras puras do negócio, independentes de frameworks.
+- `domain/model/` — Entidades e objetos de valor  
+- `domain/exception/` — Exceções e validações de domínio  
+
+### `infrastructure/` — implementações tecnológicas
+Responsabilidade: detalhes concretos de infraestrutura e integração com frameworks/serviços externos.
+- `infrastructure/adapters/in/` — Adaptadores de entrada  
+  Convertem requisições externas em chamadas às portas de entrada.  
+- `infrastructure/adapters/out/` — Adaptadores de saída  
+  Implementações das portas de saída como clientes SMTP, repositórios, produtores/consumidores de fila.  
+- `infrastructure/configuration/` — Configurações do Spring  
+  Beans e configuração de integrações (RabbitMQ, Mail, métricas).  
+- `infrastructure/web/` — Componentes web transversais  
+  Interceptors, filtros, configuração de logs e métricas HTTP.  
+
+### `interfaces/` — DTOs e contratos de API
+Responsabilidade: modelos de entrada/saída expostos pela API e mapeamentos entre DTOs e entidades do domínio.
+- `interfaces/dtos/` — DTOs de request/response  
+
+## Observações de organização
+- Os casos de uso (camada `application`) dependem de interfaces nas `port/out` e não de implementações concretas.
+- Implementações concretas ficam em `infrastructure/` e implementam as portas definidas em `application/port/out/`.
+- Validações e regras puras devem ficar em `domain/` para manter o núcleo testável e independente de frameworks.
 
 ## Validações
 
